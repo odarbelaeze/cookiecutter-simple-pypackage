@@ -1,63 +1,45 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 
-"""
-===============================
-HtmlTestRunner
-===============================
+from setuptools import find_packages, setup
 
+requirements = [{%- if cookiecutter.command_line_interface|lower == "click" %}"Click>=6.0",{%- endif %} ]
 
-.. image:: https://img.shields.io/pypi/v/{{ cookiecutter.project_slug }}.svg
-        :target: https://pypi.python.org/pypi/{{ cookiecutter.project_slug }}
-.. image:: https://img.shields.io/travis/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}.svg
-        :target: https://travis-ci.org/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}
+setup_requirements = [
+    "pytest-runner",
+]
 
-{{ cookiecutter.project_short_description }}
-
-
-Links:
----------
-* `Github <https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}>`_
-"""
-
-from setuptools import setup, find_packages
-
-requirements = [{%- if cookiecutter.command_line_interface|lower == 'click' %}'Click>=6.0',{%- endif %} ]
-
-setup_requirements = [{%- if cookiecutter.use_pytest == 'y' %}'pytest-runner',{%- endif %} ]
-
-test_requirements = [{%- if cookiecutter.use_pytest == 'y' %}'pytest',{%- endif %} ]
+test_requirements = [
+    "pytest",
+]
 
 {%- set license_classifiers = {
-    'MIT license': 'License :: OSI Approved :: MIT License',
-    'BSD license': 'License :: OSI Approved :: BSD License',
-    'ISC license': 'License :: OSI Approved :: ISC License (ISCL)',
-    'Apache Software License 2.0': 'License :: OSI Approved :: Apache Software License',
-    'GNU General Public License v3': 'License :: OSI Approved :: GNU General Public License v3 (GPLv3)'
+    "MIT license": "License :: OSI Approved :: MIT License",
+    "BSD license": "License :: OSI Approved :: BSD License",
+    "ISC license": "License :: OSI Approved :: ISC License (ISCL)",
+    "Apache Software License 2.0": "License :: OSI Approved :: Apache Software License",
+    "GNU General Public License v3": "License :: OSI Approved :: GNU General Public License v3 (GPLv3)"
 } %}
 
 setup(
     author="{{ cookiecutter.full_name.replace('\"', '\\\"') }}",
-    author_email='{{ cookiecutter.email }}',
+    author_email="{{ cookiecutter.email }}",
     classifiers=[
-        'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
+        "Development Status :: 2 - Pre-Alpha",
+        "Intended Audience :: Developers",
 {%- if cookiecutter.open_source_license in license_classifiers %}
-        '{{ license_classifiers[cookiecutter.open_source_license] }}',
+        "{{ license_classifiers[cookiecutter.open_source_license] }}",
 {%- endif %}
-        'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
+        "Natural Language :: English",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
     ],
     description="{{ cookiecutter.project_short_description }}",
-    {%- if 'no' not in cookiecutter.command_line_interface|lower %}
+    {%- if "no" not in cookiecutter.command_line_interface|lower %}
     entry_points={
-        'console_scripts': [
-            '{{ cookiecutter.project_slug }}={{ cookiecutter.project_slug }}.cli:main',
+        "console_scripts": [
+            "{{ cookiecutter.project_slug }}={{ cookiecutter.project_slug }}.cli:main",
         ],
     },
     {%- endif %}
@@ -65,15 +47,14 @@ setup(
 {%- if cookiecutter.open_source_license in license_classifiers %}
     license="{{ cookiecutter.open_source_license }}",
 {%- endif %}
-    long_description=__doc__,
+    long_description=open("README.md").read(),
     include_package_data=True,
-    keywords='{{ cookiecutter.project_slug }}',
-    name='{{ cookiecutter.project_slug }}',
-    packages=find_packages(include=['{{ cookiecutter.project_slug }}']),
+    keywords="{{ cookiecutter.project_slug }}",
+    name="{{ cookiecutter.project_slug }}",
+    packages=find_packages(where='src'),
+    package_dir={"": "src/", "{{ cookiecutter.project_slug }}": "src/{{cookiecutter.project_slug}}"},
     setup_requires=setup_requirements,
-    test_suite='tests',
-    tests_require=test_requirements,
-    url='https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}',
-    version='{{ cookiecutter.version }}',
+    url="https://github.com/{{ cookiecutter.github_username }}/{{ cookiecutter.project_slug }}",
+    version="{{ cookiecutter.version }}",
     zip_safe=False,
 )

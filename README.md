@@ -6,12 +6,8 @@
 
 ## Features
 
-* Testing setup with ``unittest`` and ``python setup.py test`` or ``py.test``
-* [Travis-CI](http://travis-ci.org/): Ready for Travis Continuous Integration testing
-* [Tox](http://testrun.org/tox/) testing: Setup to easily test for Python 3.6
-* [Bumpversion](https://github.com/peritus/bumpversion): Pre-configured version bumping with a single command
-* Use [Pipenv](https://github.com/pypa/pipenv), the officially recommended Python packaging tool from Python.org
-* Auto-release to [PyPI](https://pypi.python.org/pypi) when you push a new tag to master (optional)
+* Testing setup with [pytest](https://docs.pytest.org/)
+* Auto-release to [PyPI](https://pypi.python.org/pypi) when you push a new tag to master.
 * Command line interface using Click (optional)
 
 
@@ -28,7 +24,7 @@ Cookiecutter 1.4.0 or higher):
 Generate a Python package project:
 
 ```bash
-    cookiecutter https://github.com/oldani/cookiecutter-simple-pypackage
+    cookiecutter https://github.com/odarbelaeze/cookiecutter-simple-pypackage
 ```
 
 Then:

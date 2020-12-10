@@ -1,0 +1,7 @@
+flake8==3.5.0
+coverage==4.5.1
+{% if cookiecutter.command_line_interface == 'y' -%}
+click==6.7{% endif %}
+pytest==3.4.1
+pytest-runner==2.11.1
+black==20.8b1
