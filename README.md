@@ -30,14 +30,10 @@ Generate a Python package project:
 Then:
 
 * Create a repo and put it there.
-* Add the repo to your [Travis-CI](http://travis-ci.org/) account.
-* Install the dev requirements. (`pipenv install --dev`) not needs for virtualenv.
+* Install the dev requirements. (`pip install -r requirements_dev.txt`) not needs for virtualenv.
 * [Register](https://packaging.python.org/distributing/#register-your-project) your project with PyPI.
-* Run the Travis CLI command `travis encrypt --add deploy.password` to encrypt your PyPI password in Travis config
-  and activate automated deployment on PyPI when you push a new tag to master branch.
 * Start developing your package.
 * Release your package by pushing a new tag to master.
-* Activate your project on [pyup.io](https://pyup.io/).
 
 
 For more details, see the cookiecutter-pypackage [tutorial](https://cookiecutter-pypackage.readthedocs.io/en/latest/tutorial.html).
