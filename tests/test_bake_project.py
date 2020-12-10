@@ -1,10 +1,9 @@
 import datetime
-import importlib
 import os
 import shlex
 import subprocess
-import sys
 from contextlib import contextmanager
+from importlib import util
 
 from click.testing import CliRunner
 from cookiecutter.utils import rmtree
@@ -30,7 +29,7 @@ def bake_in_temp_dir(cookies, *args, **kwargs):
     Delete the temporal directory that is created when executing the tests
     :param cookies: pytest_cookies.Cookies, cookie to be baked and its temporal files will be removed
     """
-    result = cookies.bake(*args, **kwargs)
+    result = cookies.bake(*args, **kwargs, template='../')
     try:
         yield result
     finally:
@@ -64,7 +63,7 @@ def project_info(result):
     """Get toplevel dir, project_slug, and project dir from baked cookies"""
     project_path = str(result.project)
     project_slug = os.path.split(project_path)[-1]
-    project_dir = os.path.join(project_path, project_slug)
+    project_dir = os.path.join(project_path, "src", project_slug)
     return project_path, project_slug, project_dir
 
 
@@ -76,7 +75,7 @@ def test_bake_with_defaults(cookies):
 
         found_toplevel_files = [f.basename for f in result.project.listdir()]
         assert "setup.py" in found_toplevel_files
-        assert "python_boilerplate" in found_toplevel_files
+        assert "src" in found_toplevel_files
         assert "tests" in found_toplevel_files
 
 
@@ -132,13 +131,13 @@ def test_bake_not_open_source(cookies):
         found_toplevel_files = [f.basename for f in result.project.listdir()]
         assert "setup.py" in found_toplevel_files
         assert "LICENSE" not in found_toplevel_files
-        assert "License" not in result.project.join("README.rst").read()
+        assert "License" not in result.project.join("README.md").read()
 
 
 def test_using_pytest(cookies):
-    with bake_in_temp_dir(cookies, extra_context={"use_pytest": "y"}) as result:
+    with bake_in_temp_dir(cookies) as result:
         assert result.project.isdir()
-        test_file_path = result.project.join("tests/test_python_boilerplate.py")
+        test_file_path = result.project.join("tests/test_your_awesome_project.py")
         lines = test_file_path.readlines()
         assert "import pytest" in "".join(lines)
         # Test the new pytest target
@@ -147,18 +146,9 @@ def test_using_pytest(cookies):
         run_inside_dir("python setup.py test", str(result.project)) == 0
 
 
-def test_not_using_pytest(cookies):
-    with bake_in_temp_dir(cookies) as result:
-        assert result.project.isdir()
-        test_file_path = result.project.join("tests/test_python_boilerplate.py")
-        lines = test_file_path.readlines()
-        assert "import unittest" in "".join(lines)
-        assert "import pytest" not in "".join(lines)
-
-
 def test_bake_with_no_console_script(cookies):
     context = {"command_line_interface": "No command-line interface"}
-    result = cookies.bake(extra_context=context)
+    result = cookies.bake(extra_context=context, template='../')
     project_path, project_slug, project_dir = project_info(result)
     found_project_files = os.listdir(project_dir)
     assert "cli.py" not in found_project_files
@@ -170,7 +160,7 @@ def test_bake_with_no_console_script(cookies):
 
 def test_bake_with_console_script_files(cookies):
     context = {"command_line_interface": "click"}
-    result = cookies.bake(extra_context=context)
+    result = cookies.bake(extra_context=context, template="../")
     project_path, project_slug, project_dir = project_info(result)
     found_project_files = os.listdir(project_dir)
     assert "cli.py" in found_project_files
@@ -182,19 +172,13 @@ def test_bake_with_console_script_files(cookies):
 
 def test_bake_with_console_script_cli(cookies):
     context = {"command_line_interface": "click"}
-    result = cookies.bake(extra_context=context)
+    result = cookies.bake(extra_context=context, template="../")
     project_path, project_slug, project_dir = project_info(result)
     module_path = os.path.join(project_dir, "cli.py")
     module_name = ".".join([project_slug, "cli"])
-    if sys.version_info >= (3, 5):
-        spec = importlib.util.spec_from_file_location(module_name, module_path)
-        cli = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(cli)
-    elif sys.version_info >= (3, 3):
-        file_loader = importlib.machinery.SourceFileLoader
-        cli = file_loader(module_name, module_path).load_module()
-    else:
-        cli = imp.load_source(module_name, module_path)
+    spec = util.spec_from_file_location(module_name, module_path)
+    cli = util.module_from_spec(spec)
+    spec.loader.exec_module(cli)
     runner = CliRunner()
     noarg_result = runner.invoke(cli.main)
     assert noarg_result.exit_code == 0
